@@ -41,14 +41,12 @@ namespace ProjectManagementSystem.Infrastructure.Persistance.Repositories
 
         public Project? CheckProjectExists(string name, Guid id)
         {
-            var projectExists = _context.Projects.FirstOrDefault(p => p.Name == name && p.ClientId == id);
-
-            return projectExists;
+            return _context.Projects.FirstOrDefault(p => p.Name == name && p.ClientId == id);
         }
 
         public async Task<Project?> UpdateProject(Project updateProject)
         {
-            var project = _context.Projects.FirstOrDefault(p => p.Id.Value == updateProject.Id.Value);
+            var project = _context.Projects.AsEnumerable().FirstOrDefault(p => p.Id.Value == updateProject.Id.Value);
 
             if (project is not null)
             {
@@ -63,7 +61,7 @@ namespace ProjectManagementSystem.Infrastructure.Persistance.Repositories
 
         public async Task<Project?> AssignProjectTask(Domain.Aggregates.Task.Task task, Guid projectId)
         {
-            var project = _context.Projects.FirstOrDefault(x => x.Id.Value == projectId);
+            var project = _context.Projects.AsEnumerable().FirstOrDefault(x => x.Id.Value == projectId);
             var taskId = task.Id.Value;
             project.TaskIds.Add(new(taskId));
             await _context.SaveChangesAsync();
