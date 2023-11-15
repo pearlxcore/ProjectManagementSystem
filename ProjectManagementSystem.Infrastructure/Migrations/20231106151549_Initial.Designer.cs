@@ -87,7 +87,7 @@ namespace ProjectManagementSystem.Infrastructure.Migrations
                     b.ToTable("Projects", (string)null);
                 });
 
-            modelBuilder.Entity("ProjectManagementSystem.Domain.Aggregates.Task.Task", b =>
+            modelBuilder.Entity("ProjectManagementSystem.Domain.Aggregates.TaskAggregate.TaskAggregate", b =>
                 {
                     b.Property<Guid>("Id")
                         .HasColumnType("uniqueidentifier");
@@ -214,7 +214,7 @@ namespace ProjectManagementSystem.Infrastructure.Migrations
 
             modelBuilder.Entity("ProjectManagementSystem.Domain.Aggregates.Projects.Project", b =>
                 {
-                    b.OwnsMany("ProjectManagementSystem.Domain.Aggregates.Task.ValueObjects.TaskId", "TaskIds", b1 =>
+                    b.OwnsMany("ProjectManagementSystem.Domain.Aggregates.TaskAggregate.ValueObjects.TaskId", "TaskIds", b1 =>
                         {
                             b1.Property<int>("Id")
                                 .ValueGeneratedOnAdd()
@@ -242,7 +242,7 @@ namespace ProjectManagementSystem.Infrastructure.Migrations
                     b.Navigation("TaskIds");
                 });
 
-            modelBuilder.Entity("ProjectManagementSystem.Domain.Aggregates.Task.Task", b =>
+            modelBuilder.Entity("ProjectManagementSystem.Domain.Aggregates.TaskAggregate.TaskAggregate", b =>
                 {
                     b.OwnsMany("ProjectManagementSystem.Domain.Aggregates.Users.ValueObjects.UserId", "AssignedUserIds", b1 =>
                         {

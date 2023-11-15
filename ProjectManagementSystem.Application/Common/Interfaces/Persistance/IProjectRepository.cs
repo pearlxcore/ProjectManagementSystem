@@ -5,13 +5,13 @@ namespace ProjectManagementSystem.Application.Common.Interfaces.Persistance
 {
     public interface IProjectRepository
     {
-        void CreateProject(Project project);
-        Project? UpdateProject(Project project);
+        System.Threading.Tasks.Task CreateProject(Project project);
+        Task<Project?> UpdateProject(Project project);
         void DeleteProject(Guid guid);
-        List<Project> GetAll();
+        Task<List<Project>> GetAll();
         Project? GetProjectById(Guid guid);
         Project? CheckProjectExists(string name, Guid id);
-        Project? AssignProjectTask(Task task, Guid projectId);
+        Task<Project?> AssignProjectTask(Task task, Guid projectId);
         bool CheckTaskIdExists(Guid taskId);
     }
 }

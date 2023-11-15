@@ -63,7 +63,7 @@ namespace ProjectManagementSystem.Infrastructure
         {
             services.AddDbContext<ProjectManagementSystemDbContext>(options =>
             {
-                options.UseSqlServer();
+                options.UseSqlServer("Server=localhost;Database=ProjectManagementSystem;User Id=sa;Password=Playstation4!;Encrypt=false");
             });
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<IProjectRepository, ProjectRepository>();

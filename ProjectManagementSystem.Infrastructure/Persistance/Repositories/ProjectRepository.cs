@@ -1,63 +1,59 @@
-﻿using ProjectManagementSystem.Application.Common.Interfaces.Persistance;
+﻿using Microsoft.EntityFrameworkCore;
+using ProjectManagementSystem.Application.Common.Interfaces.Persistance;
 using ProjectManagementSystem.Domain.Aggregates.Projects;
 
 namespace ProjectManagementSystem.Infrastructure.Persistance.Repositories
 {
     public class ProjectRepository : IProjectRepository
     {
-        private readonly ITaskRepository _taskRepository;
+        private readonly ProjectManagementSystemDbContext _context;
 
-        public ProjectRepository(ITaskRepository taskRepository)
+        public ProjectRepository(ProjectManagementSystemDbContext context)
         {
-            _taskRepository = taskRepository;
+            _context=context;
         }
 
-        private static readonly List<Project> _projects = new List<Project>();
-
-        public void CreateProject(Project project)
+        public async Task CreateProject(Project project)
         {
-            _projects.Add(project);
-            return;
+            _context.Projects.Add(project);
+            await _context.SaveChangesAsync();
         }
 
-        public void DeleteProject(Guid guid)
+        public async void DeleteProject(Guid guid)
         {
-            var project = _projects.FirstOrDefault(p => p.Id.Value == guid);
+            var project = _context.Projects.FirstOrDefault(p => p.Id.Value == guid);
             if (project is not null)
             {
-                _projects.Remove(project);
+                _context.Projects.Remove(project);
+                await _context.SaveChangesAsync();
             }
         }
 
-        public List<Project> GetAll()
+        public Task<List<Project>> GetAll()
         {
-            return _projects.ToList();
+            return _context.Projects.ToListAsync();
         }
 
         public Project? GetProjectById(Guid guid)
         {
-            var project = _projects.FirstOrDefault(p => p.Id.Value == guid);
-            if (project is not null)
-            {
-                return project;
-            }
-            return null;
+            return _context.Projects.AsEnumerable().FirstOrDefault(p => p.Id.Value == guid);
         }
 
         public Project? CheckProjectExists(string name, Guid id)
         {
-            var projectExists = _projects.FirstOrDefault(p => p.Name == name && p.ClientId == id);
+            var projectExists = _context.Projects.FirstOrDefault(p => p.Name == name && p.ClientId == id);
 
             return projectExists;
         }
 
-        public Project? UpdateProject(Project updateProject)
+        public async Task<Project?> UpdateProject(Project updateProject)
         {
-            var project = _projects.FirstOrDefault(p => p.Id.Value == updateProject.Id.Value);
+            var project = _context.Projects.FirstOrDefault(p => p.Id.Value == updateProject.Id.Value);
 
             if (project is not null)
             {
                 project = updateProject;
+                await _context.SaveChangesAsync();
             }
             else
                 return null;
@@ -65,18 +61,20 @@ namespace ProjectManagementSystem.Infrastructure.Persistance.Repositories
             return project;
         }
 
-        public Project? AssignProjectTask(Domain.Aggregates.Task.Task task, Guid projectId)
+        public async Task<Project?> AssignProjectTask(Domain.Aggregates.Task.Task task, Guid projectId)
         {
-            var project = _projects.FirstOrDefault(x => x.Id.Value == projectId);
+            var project = _context.Projects.FirstOrDefault(x => x.Id.Value == projectId);
             var taskId = task.Id.Value;
             project.TaskIds.Add(new(taskId));
+            await _context.SaveChangesAsync();
+
             return project;
         }
 
         public bool CheckTaskIdExists(Guid taskId)
         {
             // Use LINQ to check if the user exists in the list of projects
-            var taskIdExists = _projects.Any(project => project.TaskIds.Any(user => user.Value == taskId));
+            var taskIdExists = _context.Projects.Any(project => project.TaskIds.Any(user => user.Value == taskId));
 
             return taskIdExists;
         }

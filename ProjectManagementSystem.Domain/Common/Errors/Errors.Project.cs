@@ -17,6 +17,10 @@ namespace ProjectManagementSystem.Domain.Common.Errors
             public static Error DuplicateId = Error.Conflict(
                 "Project.DuplicateId",
                 "Task id already exists.");
+
+            public static Error TaskAssignmentFailed = Error.Failure(
+                code: "Project.TaskAssignmentFailed",
+                description: "Failed to assign task to project.");
         }
     }
 }

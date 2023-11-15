@@ -5,7 +5,6 @@ namespace ProjectManagementSystem.Infrastructure.Persistance.Repositories
 {
     public class UserRepository : IUserRepository
     {
-        private static readonly List<User> _users = new();
         private readonly ProjectManagementSystemDbContext _context;
 
         public UserRepository(ProjectManagementSystemDbContext context)
@@ -15,31 +14,30 @@ namespace ProjectManagementSystem.Infrastructure.Persistance.Repositories
 
         public async void AddUser(User user)
         {
-            _users.Add(user);
+            _context.Users.Add(user);
             await _context.SaveChangesAsync();
         }
 
         public User? GetUserByEmail(string email)
         {
-            return _users.FirstOrDefault(x => x.Email == email);
+            return _context.Users.AsEnumerable().FirstOrDefault(x => x.Email == email);
         }
 
         public User? GetUserById(Guid id)
         {
-            return _users.FirstOrDefault(u => u.Id.Value == id);
+            return _context.Users.AsEnumerable().FirstOrDefault(u => u.Id.Value == id);
         }
 
         public async Task<User?> UpdateUser(User userUpdate)
         {
-            var user = _users.FirstOrDefault(x => x.Id.Value == userUpdate.Id.Value);
+            var user = _context.Users.FirstOrDefault(x => x.Id.Value == userUpdate.Id.Value);
             if (user is not null)
             {
                 user = userUpdate;
+                await _context.SaveChangesAsync();
             }
             else
                 return null;
-
-            await _context.SaveChangesAsync();
 
             return user;
         }

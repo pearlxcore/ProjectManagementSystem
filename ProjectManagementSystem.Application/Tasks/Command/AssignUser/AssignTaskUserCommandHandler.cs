@@ -21,26 +21,35 @@ namespace ProjectManagementSystem.Application.Tasks.Command.AssignUser
         public async Task<ErrorOr<Task>> Handle(AssignTaskUserCommand request, CancellationToken cancellationToken)
         {
             // check task exists
-            if (_taskRepository.GetTaskById(request.TaskId) is not Task task)
+            var task = _taskRepository.GetTaskById(request.TaskId);
+            if (task is null)
             {
                 return Errors.Task.NotFound;
             }
 
             // check user exists
-            if (_userRepository.GetUserById(request.UserId) is not User user)
+            var user = _userRepository.GetUserById(request.UserId);
+            if (user is null)
             {
                 return Errors.User.NotFound;
             }
 
             // check if user already assign
-            if (_taskRepository.CheckUserIdExists(request.UserId))
+            var userSigned = _taskRepository.CheckUserIdExists(request.UserId);
+            if (userSigned)
             {
                 return Errors.Task.DuplicateUserId;
             }
 
-            task = _taskRepository.AssignTaskUser(task.Id.Value, user.Id.Value);
 
-            return task;
+            var assignedTask = await _taskRepository.AssignTaskUserAsync(task.Id.Value, user.Id.Value);
+
+            if (assignedTask is null)
+            {
+                return Errors.Task.UserAssignmentFailed;
+            }
+
+            return assignedTask;
         }
     }
 }

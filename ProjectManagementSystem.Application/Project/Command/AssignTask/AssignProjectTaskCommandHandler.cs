@@ -26,21 +26,26 @@ namespace ProjectManagementSystem.Application.Projects.Command.AssignTask
                 return Errors.Project.NotFound;
             }
 
-            // check if user already exist
-            if (_projectRepository.CheckTaskIdExists(request.TaskId))
-            {
-                return Errors.Project.DuplicateId;
-            }
-
             // check if task is exists
             if (_taskRepository.GetTaskById(request.TaskId) is not Task task)
             {
                 return Errors.Task.NotFound;
             }
 
-            project =  _projectRepository.AssignProjectTask(task, request.ProjectId);
+            // check if task already assigned to project
+            if (_projectRepository.CheckTaskIdExists(request.TaskId))
+            {
+                return Errors.Project.DuplicateId;
+            }
 
-            return project;
+            var assignProject = await _projectRepository.AssignProjectTask(task, request.ProjectId);
+
+            if (assignProject is null)
+            {
+                return Errors.Project.TaskAssignmentFailed;
+            }
+
+            return assignProject;
         }
     }
 }

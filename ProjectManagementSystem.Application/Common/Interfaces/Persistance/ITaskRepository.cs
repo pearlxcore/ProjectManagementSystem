@@ -4,10 +4,10 @@ namespace ProjectManagementSystem.Application.Common.Interfaces.Persistance
 {
     public interface ITaskRepository
     {
-        void AddTask(Task task);
+        System.Threading.Tasks.Task AddTask(Task task);
         Task? GetTaskById(Guid taskId);
         Task? GetTaskByName(string name);
-        Task? AssignTaskUser(Guid taskId, Guid userId);
+        Task<Task?> AssignTaskUserAsync(Guid taskId, Guid userId);
         bool CheckUserIdExists(Guid userId);
     }
 }
